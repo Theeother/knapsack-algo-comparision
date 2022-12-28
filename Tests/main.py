@@ -11,14 +11,24 @@ sys.path.insert(0, 'C:/Users/aksed/OneDrive/Bureau/softComputing/Single_solution
 
 # import ../Single_solution_algorithms/simulated_annealing.py
 import simulated_annealing 
+import glouton_search
+import tabu_search 
 
 class Team1:
     def __init__(self):
         self.name = "Team 1"
-        self.solvingMethods = ["simulated_annealing"] # List of methods that are exactly the name of the methods used
+        self.solvingMethods = ["simulated_annealing","glouton_search","tabu_search"] # List of methods that are exactly the name of the methods used
 
     def simulated_annealing(self, numberOfElements, listOfElements , backPackSize):
         return simulated_annealing.simulated_annealing_method(numberOfElements, listOfElements , backPackSize)
+
+    def glouton_search(self, numberOfElements, listOfElements , backPackSize):
+        if numberOfElements > 10:
+            return [0, '']
+        return glouton_search.glouton_search_method(numberOfElements, listOfElements , backPackSize)
+
+    def tabu_search(self, numberOfElements, listOfElements , backPackSize):
+        return tabu_search.tabu_search_method(numberOfElements, listOfElements , backPackSize)
     
     # Don't forget to add any new methods name to the solvingMethods list above
     # Edit only team 1, and the program will automatically compare the results of both teams and all the methods used by each team
@@ -45,7 +55,7 @@ class Team2:
           if value > maxi:
             maxi = value
             answer = i 
-      answer = bin(answer)[2:].zfill(numberOfElements)
+      answer = bin(answer)[2:].zfill(numberOfElements)[::-1]
 
       return [maxi, answer]
 
@@ -56,8 +66,7 @@ def check_solution_validity(solution, item_list, backPackSize):
         if solution[1][i] == '1':
             value += item_list[i][0]
             weight += item_list[i][1]
-
-    return solution[0]==value and weight<=backPackSize
+    return(solution[0]==value and weight<=backPackSize)
 
 
 def run_method(method, numberOfElements, listOfElements, backPackSize, optimalSolution):
@@ -71,9 +80,10 @@ def run_method(method, numberOfElements, listOfElements, backPackSize, optimalSo
     # Check if the solution is valid
     solutionValidity = check_solution_validity(solution, listOfElements, backPackSize)
     # Check solution accuracy
+    # if solutionValidity:print("---------- this is valid ",solution[0], optimalSolution,method)
     solutionAccuracy = 0
     if solutionValidity:
-        solutionAccuracy = 100*(solution[0])/optimalSolution
+        solutionAccuracy = 100*(solution[0])/optimalSolution 
     
     return {"time":time, "solutionValidity":solutionValidity, "solutionAccuracy":solutionAccuracy, "solution":solution}
 
@@ -93,25 +103,25 @@ if __name__ == "__main__" :
     data = {}
     for scale in list_of_scales:
         data[scale] = {}
-        # list of test cases for each scale
-        list_of_test_cases = os.listdir("test_data/"+scale)
-        for test_case in list_of_test_cases:
-            # get the optimal solution
-            optimalSolution = float(open("test_data/"+scale+"_optimum/"+test_case).read())
-            # get the test case data
-            with open("test_data/"+scale+"/"+test_case) as f:
-                numberOfElements, backPackSize = map(int, f.readline().split())
-                listOfElements = []
-                for i in range(numberOfElements):
-                    listOfElements.append(list(map(float, f.readline().split())))
-            # run the methods
-            for team in [Team1(), Team2()]:
-                data[scale][team.name] = {}
-                for method in team.solvingMethods:
-                    data[scale][team.name][method] = {}
-                    data[scale][team.name][method]["nb_valid"] = 0
-                    data[scale][team.name][method]["time_list"] = []
-                    data[scale][team.name][method]["accuracy_list"] = []
+        for team in [Team1(), Team2()]:
+            data[scale][team.name] = {}
+            for method in team.solvingMethods:
+                data[scale][team.name][method] = {}
+                data[scale][team.name][method]["nb_valid"] = 0
+                data[scale][team.name][method]["time_list"] = []
+                data[scale][team.name][method]["accuracy_list"] = []
+            # list of test cases for each scale
+                list_of_test_cases = os.listdir("test_data/"+scale)
+                for test_case in list_of_test_cases:
+                    # get the optimal solution
+                    optimalSolution = float(open("test_data/"+scale+"_optimum/"+test_case).read())
+                    # get the test case data
+                    with open("test_data/"+scale+"/"+test_case) as f:
+                        numberOfElements, backPackSize = map(int, f.readline().split())
+                        listOfElements = []
+                        for i in range(numberOfElements):
+                            listOfElements.append(list(map(float, f.readline().split())))
+                    # run the methods
 
                     result = run_method(getattr(team, method), numberOfElements, listOfElements, backPackSize, optimalSolution)
                     data[scale][team.name][method]["nb_valid"]+=result["solutionValidity"]
@@ -132,3 +142,4 @@ if __name__ == "__main__" :
             print("")
         print("")
         
+    print(data)

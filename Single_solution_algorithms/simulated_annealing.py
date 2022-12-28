@@ -70,18 +70,19 @@ def simulated_annealing_method(numberOfElements, listOfElements , backPackSize):
     # Initialisation
     T = 100
     Tmin = 85
-    K = 0.9
+    K = 0.95
     nb_it = 3
     i = 0
 
     solution = select_initial_solution_randomly(numberOfElements, listOfElements, backPackSize)
-    #print("Initial solution: ", solution)
+    # print("Initial solution: ", solution)
 
     while T>Tmin and i<nb_it:
         i = i + 1
 
         #Perturbation
         new_solution = create_new_solution(solution, listOfElements, backPackSize )
+        # print("iteration ", i, " : new solution = ", new_solution)
 
         #Comparison
         diff = solution[0] - new_solution[0]
@@ -89,9 +90,9 @@ def simulated_annealing_method(numberOfElements, listOfElements , backPackSize):
         if (diff < 0):
             solution = new_solution            
         else : 
-            if random.uniform(0,1) > math.exp(-diff/T): 
+            if random.uniform(0,1) < math.exp(-diff/T): 
                 solution = new_solution
         
         T = T * K
-    #print("Initial solution: ", solution)
+    # print("Final solution: ", solution)
     return solution
