@@ -1,10 +1,8 @@
-import time
 import timeit
 import os
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
-
 
 # setting path 
 sys.path.insert(0, 'C:/Users/aksed/OneDrive/Bureau/softComputing/Single_solution_algorithms')
@@ -23,11 +21,12 @@ class Team1:
         return simulated_annealing.simulated_annealing_method(numberOfElements, listOfElements , backPackSize)
 
     def glouton_search(self, numberOfElements, listOfElements , backPackSize):
-        if numberOfElements > 10:
-            return [0, '']
+
         return glouton_search.glouton_search_method(numberOfElements, listOfElements , backPackSize)
 
     def tabu_search(self, numberOfElements, listOfElements , backPackSize):
+        if numberOfElements > 10:
+              return [0, '0'*numberOfElements]
         return tabu_search.tabu_search_method(numberOfElements, listOfElements , backPackSize)
     
     # Don't forget to add any new methods name to the solvingMethods list above
@@ -41,7 +40,7 @@ class Team2:
     def bruteForce(self, numberOfElements, listOfElements , backPackSize):
       # brute force knapsack 0/1
       if numberOfElements >10:
-        return [0, '']
+        return [0, '0'*numberOfElements]
       maxi = 0
       answer = ''
       for i in range(2**numberOfElements):
@@ -66,7 +65,7 @@ def check_solution_validity(solution, item_list, backPackSize):
         if solution[1][i] == '1':
             value += item_list[i][0]
             weight += item_list[i][1]
-    return(solution[0]==value and weight<=backPackSize)
+    return(round(solution[0],6)==round(value,6) and weight<=backPackSize)
 
 
 def run_method(method, numberOfElements, listOfElements, backPackSize, optimalSolution):
@@ -74,7 +73,7 @@ def run_method(method, numberOfElements, listOfElements, backPackSize, optimalSo
     # and the solution itself
 
     # Run the method 100 times 
-    time = timeit.timeit(lambda: method(numberOfElements, listOfElements, backPackSize), number=100)
+    time = timeit.timeit(lambda: method(numberOfElements, listOfElements, backPackSize), number=1)*100
     # Get the solution
     solution = method(numberOfElements, listOfElements, backPackSize)
     # Check if the solution is valid
@@ -82,6 +81,10 @@ def run_method(method, numberOfElements, listOfElements, backPackSize, optimalSo
     # Check solution accuracy
     # if solutionValidity:print("---------- this is valid ",solution[0], optimalSolution,method)
     solutionAccuracy = 0
+    if not solutionValidity:
+        print(method)
+        print(optimalSolution,solution,solutionValidity)
+    # print(solution[0], optimalSolution)
     if solutionValidity:
         solutionAccuracy = 100*(solution[0])/optimalSolution 
     
@@ -99,11 +102,13 @@ def run_method(method, numberOfElements, listOfElements, backPackSize, optimalSo
 
 
 if __name__ == "__main__" :
+    # list of Teams
+    teams = [Team1(), Team2()]
     list_of_scales = ["low_scale", "large_scale"]
     data = {}
     for scale in list_of_scales:
         data[scale] = {}
-        for team in [Team1(), Team2()]:
+        for team in teams:
             data[scale][team.name] = {}
             for method in team.solvingMethods:
                 data[scale][team.name][method] = {}
@@ -131,7 +136,7 @@ if __name__ == "__main__" :
     # print the results
     for scale in list_of_scales:
         print("Scale : ", scale)
-        for team in [Team1(), Team2()]:
+        for team in teams:
             print("Team : ", team.name)
             for method in team.solvingMethods:
                 print("Method : ", method)
@@ -143,3 +148,27 @@ if __name__ == "__main__" :
         print("")
         
     print(data)
+
+    # plot the results
+    # for scale in list_of_scales:
+    #     for team in teams:
+    #         for method in team.solvingMethods:
+    #             plt.figure()
+    #             plt.title("Scale : "+scale+" Team : "+team.name+" Method : "+method)
+    #             plt.hist(data[scale][team.name][method]["accuracy_list"], bins=100)
+    #             plt.xlabel("Accuracy")
+    #             plt.ylabel("Number of solutions")
+    #             plt.show()
+
+    # calculate the average accuracy for each method and plot both scales on the same bar chart
+    for team in teams:
+        for method in team.solvingMethods:
+            plt.figure()
+            plt.title("Team : "+team.name+" Method : "+method)
+            plt.bar(list_of_scales, [np.mean(data[scale][team.name][method]["accuracy_list"]) for scale in list_of_scales])
+            plt.xlabel("Scale")
+            plt.ylabel("Average accuracy")
+            plt.show()
+
+            
+    

@@ -25,6 +25,7 @@ def greedy_knapsack(numberOfElements,listOfElements, capacity):
 
 def f(begin_solution, item, capacity):
     max_value = 0
+
     for i in range(len(item)):
         if begin_solution[i] == 1 and capacity >= 0:
             max_value += item[i][0]
@@ -96,5 +97,5 @@ def tabu_search_method(numberOfElements, listOfElements , backPackSize):
 
     result = list()
     result.append(f(best_solution, listOfElements, backPackSize))
-    result.append("".join(str(i) for i in temp))
+    result.append("".join(str(i) for i in best_solution))
     return result
