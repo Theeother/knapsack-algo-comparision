@@ -1,3 +1,4 @@
 {
-  "python.analysis.extraPaths": ["./Single_solution_algorithms"]
+  "python.analysis.extraPaths": ["./Single_solution_algorithms"],
+  "python.analysis.typeCheckingMode": "off"
 }
