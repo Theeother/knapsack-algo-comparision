@@ -101,14 +101,13 @@ def run_method(method, numberOfElements, listOfElements, backPackSize, optimalSo
     solutionValidity = check_solution_validity(
         solution, listOfElements, backPackSize)
     # Check solution accuracy
-    # if solutionValidity:print("---------- this is valid ",solution[0], optimalSolution,method)
+
     solutionAccuracy = 0
-    if not solutionValidity:
-        print(method)
-        print(optimalSolution, solution, solutionValidity)
-    # print(solution[0], optimalSolution)
     if solutionValidity:
         solutionAccuracy = 100*(solution[0])/optimalSolution
+    # else:
+    #     print(method)
+    #     print(optimalSolution, solution, solutionValidity)
 
     return {"time": time, "solutionValidity": solutionValidity, "solutionAccuracy": solutionAccuracy, "solution": solution}
 
@@ -138,7 +137,6 @@ if __name__ == "__main__":
                 data[scale][team.name][method]["time_list"] = []
                 data[scale][team.name][method]["accuracy_list"] = []
             # list of test cases for each scale
-                print(os.getcwd())
                 list_of_test_cases = os.listdir("Tests/test_data/"+scale)
                 for test_case in list_of_test_cases:
                     # get the optimal solution

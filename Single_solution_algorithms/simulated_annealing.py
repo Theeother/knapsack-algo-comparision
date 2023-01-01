@@ -1,36 +1,47 @@
 import random
 import math
+from operator import itemgetter
 
 # function that select the initial solution of simulated_annealing method randomly
 def select_initial_solution_randomly(numberOfElements, listOfElements, backPackSize):
-    remaining_items = listOfElements.copy()
-    selected_items = []
-    remaining_capacity = backPackSize
+    solution = []
 
-    items_selection_list = numberOfElements * ['0']
-    value = 0
-  
-    while remaining_capacity > 0 and len(remaining_items) > 0:
-        index = random.randint(0, len(remaining_items) - 1)
-        if remaining_capacity - remaining_items[index][1] < 0:
-            del remaining_items[index]
-            continue
-        else:
-            remaining_capacity = remaining_capacity - remaining_items[index][1]
-            selected_items.append(remaining_items[index])
-            value = value + remaining_items[index][0]
-            initial_index = listOfElements.index(remaining_items[index])
-            items_selection_list[initial_index] = '1'
-            #Test
-            #print("Selected object: ", remaining_items[index],' --> initial index ', initial_index)
-            del remaining_items[index]
-    #Test  
-    #print("Remaining capacity: ", remaining_capacity)
-    #print("Selected objects: ", selected_items)
-  
-    items_selection_string = ''.join(e for e in items_selection_list)
-  
-    return [value, items_selection_string]
+    listObjects = []
+    for e in listOfElements:
+        if e not in listObjects:
+            listObjects.append(e)
+
+    indexObjects = [] 
+    
+    for i in range(len(listObjects)):
+        index = []
+        for j in range(numberOfElements):
+            if( listOfElements[j] == listObjects[i]):
+                index.append(j)
+        indexObjects.append(index)
+
+    nbSelectionObjects = len(listObjects) * [0]
+
+    capacite_restante = backPackSize
+    current_weight = 0
+    temp_list = sorted(listOfElements,key=itemgetter(1), reverse=True)
+    max_value = 0
+    begin_solution = ['0' for i in range(numberOfElements)]
+
+    for i in range(numberOfElements):
+        if temp_list[i][1] <= capacite_restante:
+            capacite_restante -= temp_list[i][1]
+            current_weight += temp_list[i][1]
+            solution.append(i)
+            max_value += temp_list[i][0]
+
+            index = listObjects.index(temp_list[i])
+            begin_solution[indexObjects[index][nbSelectionObjects[index]]] = '1'
+            nbSelectionObjects[index] += 1
+    
+    items_selection_string = ''.join(e for e in begin_solution)
+
+    return [max_value, items_selection_string]
 
 #Test 
 #result = select_initial_solution_randomly(4, [[9,6],[11,5],[13,9],[15,7]], 20)
@@ -67,31 +78,41 @@ def create_new_solution(initial_solution, listOfElements, backPackSize ):
     
 def simulated_annealing_method(numberOfElements, listOfElements , backPackSize):
     # Initialisation
-    T = 100
-    Tmin = 85
-    K = 0.95
-    nb_it = 3
+    T = 60
+    Tmin = 10
+    K = 0.8
+    nb_it = 5
     i = 0
+    M = 10
 
     solution = select_initial_solution_randomly(numberOfElements, listOfElements, backPackSize)
-    #print("Initial solution: ", solution)
+    #print("Initial solution: ", solution, ", S_Best = ", solution, "\n")
+
+    best_solution = solution
 
     while T>Tmin and i<nb_it:
         i = i + 1
 
-        #Perturbation
-        new_solution = create_new_solution(solution, listOfElements, backPackSize )
-        #print("iteration ", i, " : new solution = ", new_solution)
+        m = 0        
+        while m<M:
+            m = m + 1
 
-        #Comparison
-        diff = solution[0] - new_solution[0]
-        
-        if (diff < 0):
-            solution = new_solution            
-        else : 
-            if random.uniform(0,1) < math.exp(-diff/T): 
-                solution = new_solution
+            #Perturbation
+            new_solution = create_new_solution(solution, listOfElements, backPackSize )
+
+            #Comparison
+            diff = solution[0] - new_solution[0]
+            
+            if (diff <= 0):
+                solution = new_solution 
+                if (diff < 0 and solution[0] != best_solution[0]):  
+                    best_solution = solution         
+            else : 
+                if random.uniform(0,1) <= math.exp(-diff/T): 
+                    solution = new_solution
+                    if (diff < 0 and solution[0] != best_solution[0]):  
+                        best_solution = solution
         
         T = T * K
     #print("Final solution: ", solution)
-    return solution
+    return best_solution
