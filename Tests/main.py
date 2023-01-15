@@ -3,6 +3,7 @@ import os
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
+import time
 
 # setting path
 
@@ -121,11 +122,24 @@ def run_method(method, numberOfElements, listOfElements, backPackSize, optimalSo
     # This function will run the method and return the time it took to run 100 times, the solution accuracy
     # and the solution itself
 
-    # Run the method 100 times
-    time = timeit.timeit(lambda: method(
-        numberOfElements, listOfElements, backPackSize), number=1)*100
-    # Get the solution
-    solution = method(numberOfElements, listOfElements, backPackSize)
+    # Run the method 100 times and get the average time and average solution
+    # if time exceeds 10 seconds, return 0
+
+    time_passed = 0
+    solution = []
+    for i in range(10):
+        start = time.time()
+        solution += [method(numberOfElements, listOfElements, backPackSize)]
+        time_passed += time.time() - start
+        if time_passed > 50:
+            time_passed = 0
+            solution = [1, '0'*numberOfElements]
+            break
+    else:
+        time_passed *= 10
+        # best solution
+        solution = max(solution, key=lambda x: x[0])
+
     # Check if the solution is valid
     solutionValidity = check_solution_validity(
         solution, listOfElements, backPackSize)
@@ -138,7 +152,7 @@ def run_method(method, numberOfElements, listOfElements, backPackSize, optimalSo
     #     print(method)
     #     print(optimalSolution, solution, solutionValidity)
 
-    return {"time": time, "solutionValidity": solutionValidity, "solutionAccuracy": solutionAccuracy, "solution": solution}
+    return {"time": time_passed, "solutionValidity": solutionValidity, "solutionAccuracy": solutionAccuracy, "solution": solution}
 
 
 # data structure :
