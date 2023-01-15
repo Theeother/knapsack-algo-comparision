@@ -9,13 +9,25 @@ import numpy as np
 # import ../Single_solution_algorithms/simulated_annealing.py
 
 
-def importing():
+def importingTeam1():
     sys.path.insert(
         0, 'C:/Users/aksed/OneDrive/Bureau/softComputing/Single_solution_algorithms')
     import simulated_annealing
     import glouton_search
     import tabu_search
     return simulated_annealing, glouton_search, tabu_search
+
+
+def importingTeam2():
+    sys.path.insert(
+        0, 'C:/Users/aksed/OneDrive/Bureau/softComputing/genetic_algorithms')
+    import genetic_algo_1
+    import genetic_algo_2
+    import genetic_algo_3
+    import genetic_algo_4
+    import genetic_algo_5
+    import genetic_algo_6
+    return genetic_algo_1.determinist_selection_and_single_point_crossover, genetic_algo_2.determinist_selection_and_multipoints_crossover, genetic_algo_3.determinist_selection_and_uniform_crossover, genetic_algo_4.tournament_selection_and_single_point_crossover, genetic_algo_5.roulette_wheel_selection_and_single_point_crossover, genetic_algo_6.uniform_selection_and_single_point_crossover
 
 
 def importing_plots():
@@ -25,7 +37,8 @@ def importing_plots():
     return ploting
 
 
-simulated_annealing, glouton_search, tabu_search = importing()
+simulated_annealing, glouton_search, tabu_search = importingTeam1()
+determinist_selection_and_single_point_crossover, determinist_selection_and_multipoints_crossover, determinist_selection_and_uniform_crossover, tournament_selection_and_single_point_crossover, roulette_wheel_selection_and_single_point_crossover, uniform_selection_and_single_point_crossover = importingTeam2()
 
 
 class Team1:
@@ -44,7 +57,7 @@ class Team1:
 
     def tabu_search(self, numberOfElements, listOfElements, backPackSize):
         if numberOfElements > 10:
-            return [0, '0'*numberOfElements]
+            return [1, '0'*numberOfElements]
         return tabu_search.tabu_search_method(numberOfElements, listOfElements, backPackSize)
 
     # Don't forget to add any new methods name to the solvingMethods list above
@@ -54,28 +67,44 @@ class Team1:
 class Team2:
     def __init__(self):
         self.name = "Team 2"
-        self.solvingMethods = ["bruteForce"]
+        self.solvingMethods = ["combination1_determinist_selection_and_single_point_crossover", "combination2_determinist_selection_and_multipoints_crossover", "combination3_determinist_selection_and_uniform_crossover",
+                               "combination4_tournament_selection_and_single_point_crossover", "combination5_roulette_wheel_selection_and_single_point_crossover", "combination6_uniform_selection_and_single_point_crossover"]
 
-    def bruteForce(self, numberOfElements, listOfElements, backPackSize):
-        # brute force knapsack 0/1
-        if numberOfElements > 10:
-            return [0, '0'*numberOfElements]
-        maxi = 0
-        answer = ''
-        for i in range(2**numberOfElements):
-            weight = 0
-            value = 0
-            for j in range(numberOfElements):
-                if i & (1 << j):
-                    weight += listOfElements[j][1]
-                    value += listOfElements[j][0]
-            if weight <= backPackSize:
-                if value > maxi:
-                    maxi = value
-                    answer = i
-        answer = bin(answer)[2:].zfill(numberOfElements)[::-1]
+    def combination1_determinist_selection_and_single_point_crossover(self, numberOfElements, listOfElements, backPackSize):
+        try:
+            return determinist_selection_and_single_point_crossover(numberOfElements, listOfElements, backPackSize)
+        except:
+            return [1, '0'*numberOfElements]
 
-        return [maxi, answer]
+    def combination2_determinist_selection_and_multipoints_crossover(self, numberOfElements, listOfElements, backPackSize):
+        try:
+            return determinist_selection_and_multipoints_crossover(numberOfElements, listOfElements, backPackSize)
+        except:
+            return [1, '0'*numberOfElements]
+
+    def combination3_determinist_selection_and_uniform_crossover(self, numberOfElements, listOfElements, backPackSize):
+        try:
+            return determinist_selection_and_uniform_crossover(numberOfElements, listOfElements, backPackSize)
+        except:
+            return [1, '0'*numberOfElements]
+
+    def combination4_tournament_selection_and_single_point_crossover(self, numberOfElements, listOfElements, backPackSize):
+        try:
+            return tournament_selection_and_single_point_crossover(numberOfElements, listOfElements, backPackSize)
+        except:
+            return [1, '0'*numberOfElements]
+
+    def combination5_roulette_wheel_selection_and_single_point_crossover(self, numberOfElements, listOfElements, backPackSize):
+        try:
+            return roulette_wheel_selection_and_single_point_crossover(numberOfElements, listOfElements, backPackSize)
+        except:
+            return [1, '0'*numberOfElements]
+
+    def combination6_uniform_selection_and_single_point_crossover(self, numberOfElements, listOfElements, backPackSize):
+        try:
+            return uniform_selection_and_single_point_crossover(numberOfElements, listOfElements, backPackSize)
+        except:
+            return [1, '0'*numberOfElements]
 
 
 def check_solution_validity(solution, item_list, backPackSize):
