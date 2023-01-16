@@ -57,8 +57,6 @@ class Team1:
         return glouton_search.glouton_search_method(numberOfElements, listOfElements, backPackSize)
 
     def tabu_search(self, numberOfElements, listOfElements, backPackSize):
-        if numberOfElements > 10:
-            return [1, '0'*numberOfElements]
         return tabu_search.tabu_search_method(numberOfElements, listOfElements, backPackSize)
 
     # Don't forget to add any new methods name to the solvingMethods list above
@@ -127,13 +125,13 @@ def run_method(method, numberOfElements, listOfElements, backPackSize, optimalSo
 
     time_passed = 0
     solution = []
-    for i in range(10):
+    for i in range(1):
         start = time.time()
         solution += [method(numberOfElements, listOfElements, backPackSize)]
         time_passed += time.time() - start
-        if time_passed > 50:
+        if time_passed > 2:
             time_passed = 0
-            solution = [1, '0'*numberOfElements]
+            solution = [-1, '0'*numberOfElements]
             break
     else:
         time_passed *= 10
@@ -148,6 +146,10 @@ def run_method(method, numberOfElements, listOfElements, backPackSize, optimalSo
     solutionAccuracy = 0
     if solutionValidity:
         solutionAccuracy = 100*(solution[0])/optimalSolution
+    if solution[0] == 1:
+        print(method)
+        print(optimalSolution)
+        print(solution)
     # else:
     #     print(method)
     #     print(optimalSolution, solution, solutionValidity)
